@@ -14,8 +14,18 @@ const productSchema = new mongoose.Schema({
     ram: {
         type: Number
     },
+    gen:{
+        type: Number
+    },
     rom: {
         type: Number
+    },
+    brand:{
+        type:String
+    },
+    use : {
+        type :String,
+        enum : ['GAMING','PROFESSIONAL','STUDENT','BUDGET']
     },
     price: {
         type : Number,
