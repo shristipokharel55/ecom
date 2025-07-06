@@ -27,8 +27,10 @@ const createProduct = async(req, res)=>{
 
 const getAllProduct = async(req, res)=>{
     try{
-        console.log("fnewh")
-        const data = await productServices.getAllProduct()
+
+        console.log(req.query)
+
+        const data = await productServices.getAllProduct(req.query)
         res.status(200).json({
         message:"All product fetched",
         data
