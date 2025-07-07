@@ -17,14 +17,14 @@ const getAllProduct = async(query = {}) =>{
     if(query.product) {filters.productName={$regex:query.product, $options:"i"}}  //kunai pani name alik lamo xa ani kunai aauta word le khojna lai use hunxa regex
     console.log(filters)
 
-    const sort = query.sort || -1
+    const sort = JSON.parse(query.sort || {"":1}) 
 
     console.log(sort)
     // console.log(query.brand.split(','))
     // console.log(query.ram.split(',').map(n=>parseInt(n)))
     // return filters
 
-    return await Product.find(filters).sort({price:1})  //filter gareko brand ra ram anusar aathawa kei khoje anusar
+    return await Product.find(filters).sort(sort)  //filter gareko brand ra ram anusar aathawa kei khoje anusar
 }
 
 const getProductById = async(id)=>{
