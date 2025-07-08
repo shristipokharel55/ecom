@@ -6,6 +6,7 @@ const register = async (data)=>{
 
     const email = data.email
     const userExist = await User.find({email})
+    console.log(userExist)
 
     if(userExist.length>0){
         new Error('user already exist')
@@ -18,9 +19,26 @@ const register = async (data)=>{
         phone : data.phone
     })
 
-    console.log(userExist)
-
-    console.log(hashedPassword)
 }
 
-export default {register}
+const login = async(data)=>{
+    const doEmailExist = await User.find({email:data.email})
+
+    if (!doEmailExist.length>0){
+        console.log("email dont exist")
+        throw new Error("Invalid Email")
+    }
+
+    const dbPassword = doEmailExist[0].password
+    const isPasswordMatched = bcrypt.compareSync(data.password,dbPassword)
+
+    if (isPasswordMatched){
+        return doEmailExist[0];
+    }
+    else{
+        throw new Error("Password didn't match")
+    }
+
+}
+
+export default {register, login}
