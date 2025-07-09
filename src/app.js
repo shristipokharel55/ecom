@@ -4,7 +4,8 @@ import connectDb from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import authRoute from './routes/authRoute.js';
-
+import cookieParser from 'cookie-parser';
+     
 
 const app =  express();
 
@@ -13,6 +14,7 @@ configDotenv();
 connectDb()
 app.use(express.json())
 app.use(express.urlencoded({encoded:true}));
+app.use(cookieParser())
 
 app.get('/',(req,res)=>{
     res.status(200).json({

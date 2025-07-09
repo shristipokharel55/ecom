@@ -1,3 +1,4 @@
+import { createToken } from "../helpers/tokens.js"
 import authService from "../services/authService.js"
 import jwt from 'jsonwebtoken'
 
@@ -43,7 +44,7 @@ const login = async(req, res)=>{
             role : data.role
         }
 
-        const token = jwt.sign(payload, "secretkey")
+        const token = createToken(payload)
         res.cookie('authToken',token)
 
 
