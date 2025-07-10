@@ -1,5 +1,5 @@
-
+import bcrypt from 'bcrypt'
 
 export const hashPassword = (password)=>{
-    return bcrypt.hashSync(data.password,10)
+    return bcrypt.hashSync(password,10)
 }
