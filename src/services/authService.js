@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import User from '../models/User.js'
 import { hashPassword } from '../utils/utility.js'
+import { generateOtp } from '../utils/generateOtp.js'
+import { sendMail } from '../utils/sendMail.js'
 
 
 const register = async (data)=>{
@@ -43,4 +45,17 @@ const login = async(data)=>{
 
 }
 
-export default {register, login}
+const forgotPassword = async (data)=>{
+    const userRegistered = await User.findOne({email:data.email})
+
+    if(!userRegistered){throw new Error("User not registered")}
+
+
+    const otp = generateOtp()
+
+    sendMail(data.email, otp)
+
+    return
+}
+
+export default {register, login, forgotPassword}

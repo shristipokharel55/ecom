@@ -82,6 +82,24 @@ const login = async(req, res) => {
     }
 }
 
+//forgot password function
+const forgotPassword = async(req, res)=>{
+    try {
+        const{email} = req.body
+    if(!email){throw new Error("Email is required")}
+
+    const data = await authService.forgotPassword({email})
+
+    res.status(200).json({
+        message: "otp sent successfully",
+        data
+    })
+    } catch (error) {
+        console.log(error.message)
+        res.status(400).send(error.nessage)
+    }
+}
+
 // Export the register and login controller functions
-export { login, register }
+export { login, register, forgotPassword }
 
