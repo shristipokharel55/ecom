@@ -53,9 +53,16 @@ const forgotPassword = async (data)=>{
 
     const otp = generateOtp()
 
+    const newOtp = await Otp.create({
+        email:data.email,
+        otp
+    })
+
     sendMail(data.email, otp)
 
-    return
+
+
+    return newOtp
 }
 
 export default {register, login, forgotPassword}
