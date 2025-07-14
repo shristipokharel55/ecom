@@ -1,8 +1,8 @@
 import express from 'express';
-import { login, register } from '../controllers/authController.js';
-import Otp from '../models/Otp.js';
-import { generateOtp } from '../utils/generateOtp.js';
-import { sendMail } from '../utils/sendMail.js';
+import { forgotPassword, login, register, verifyOtp } from '../controllers/authController.js';
+import User from '../models/User.js';
+
+import bcrypt from 'bcrypt';
 
 const router = express.Router()
 
@@ -10,70 +10,38 @@ router.post('/register', register)
 
 router.post('/login', login)
 
-router.post('/forgotPassword', async(req, res)=>{
+router.post('/forgotPassword', forgotPassword)
+
+router.post("/verify-otp", verifyOtp)
+
+router.post("/reset-password", async(req, res)=>{
     try {
-        const{email}=req.body;
-        console.log("email", email);
+        const {email, password} = req.body;
 
-        if(!email){
-            throw new Error("Email is required")
-        }
-        const otp = generateOtp();
+        if(!email || !password){ throw new Error("Email and password required")}
 
-        const doEmailExist = await Otp.findOne({email})
-        
-        let newOtp;
+        const doUserExist = await User.findOne({email})
 
-        if(!doEmailExist){
-
-            newOtp = await Otp.create({
-            email:email,
-            otp:otp
-        })
-        } else {
-            newOtp = await Otp.findOneAndUpdate(
-                { email },
-                { otp: otp, 
-                createdAt: new Date() },
-                { new: true }
-            );
+        if(!doUserExist){
+            throw new Error("User not registered")
         }
 
-            
-        sendMail(email, otp)
-        res.send(newOtp)
-    } catch (error) {
-        console.log(error.message)
-        res.send(error.message)
-    }
-})
-
-router.post("/verify-otp", async(req, res)=>{
-    try {
-        const{email, otp}=req.body
-
-        const doEmailExist = await Otp.findOne({email})
-
-        console.log(doEmailExist)
-
-        if(!doEmailExist){
-            throw new Error("Email doesn't exist!")
-
+        if(!doUserExist.canChangePassword){
+            throw new Error("Plaease verify otp first!")
         }
 
-        await Otp.deleteOne({email})
+        const hashedPassword = bcrypt.hashSync(password, 10)
 
-        if(doEmailExist.otp !==otp){throw new Error("Invallid Otp")}
+        const data = await User.findOneAndUpdate({email}, {password: hashedPassword, canChangePassword : false}, {new:true})
+
         res.status(200).json({
-            message:"Otpp validated",
-            data:doEmailExist
+            message: "password changed successfully",
+            data
         })
-
     } catch (error) {
         console.log(error.message)
         res.send(error.message)
     }
 })
-
 
 export default router;

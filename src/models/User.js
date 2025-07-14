@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['ADMIN', 'CUSTOMER'],
         default: 'CUSTOMER'
+    },
+    canChangePassword:{
+        type : Boolean,
+        default: false
     }
 
 }, {

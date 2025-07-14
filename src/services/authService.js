@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt'
+import Otp from '../models/Otp.js'
 import User from '../models/User.js'
-import { hashPassword } from '../utils/utility.js'
 import { generateOtp } from '../utils/generateOtp.js'
 import { sendMail } from '../utils/sendMail.js'
+import { hashPassword } from '../utils/utility.js'
 
 
 const register = async (data)=>{
@@ -46,23 +47,62 @@ const login = async(data)=>{
 }
 
 const forgotPassword = async (data)=>{
-    const userRegistered = await User.findOne({email:data.email})
-
-    if(!userRegistered){throw new Error("User not registered")}
 
 
-    const otp = generateOtp()
+    const isUserValid = await User.findOne({email: data.email})
 
-    const newOtp = await Otp.create({
-        email:data.email,
-        otp
-    })
+    if(!isUserValid){throw new Error("User is not registered")}
 
-    sendMail(data.email, otp)
+    const otp = generateOtp();
+
+        const doEmailExist = await Otp.findOne({email: data.email})
+        
+        let newOtp;
+
+        if(!doEmailExist){
+
+            newOtp = await Otp.create({
+            email:data.email,
+            otp:otp,
+        })
+        } else {
+            newOtp = await Otp.findOneAndUpdate(
+                { email: data.email },
+                { otp: otp, 
+                createdAt: new Date() },
+                { new: true }
+            );
+        }
+
+            
+        sendMail(data.email, otp)
 
 
 
     return newOtp
 }
 
-export default {register, login, forgotPassword}
+const verifyOtp = async({email, otp})=>{
+    const doEmailExist = await Otp.findOne({email})
+
+
+        if(!doEmailExist){
+            throw new Error("Email doesn't exist!")
+
+        }
+
+        await Otp.deleteOne({email})
+
+        if(doEmailExist.otp !== otp){throw new Error("Invallid Otp")}
+
+        await User.findOneAndUpdate(
+            {email},
+            {canChangePassword: true},
+            {new:true})
+
+        await Otp.deleteOne({email})
+
+        return "Otpp validated"
+}
+
+export default {register, login, forgotPassword, verifyOtp}
