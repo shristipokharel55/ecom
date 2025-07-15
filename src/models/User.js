@@ -34,8 +34,8 @@ const userSchema = new mongoose.Schema({
         enum: ['ADMIN', 'CUSTOMER'],
         default: 'CUSTOMER'
     },
-    canChangePassword:{
-        type : Boolean,
+    otpExpiresAt:{
+        type : Date,
         default: false
     }
 
