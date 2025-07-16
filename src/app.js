@@ -1,15 +1,16 @@
-import { configDotenv } from 'dotenv';
+
 import express from 'express';
 import connectDb from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import authRoute from './routes/authRoute.js';
 import cookieParser from 'cookie-parser';
-     
+import dotenv from 'dotenv';   
+dotenv.config(); 
 
 const app =  express();
 
-configDotenv();
+
 
 connectDb()
 app.use(express.json())
