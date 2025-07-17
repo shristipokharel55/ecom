@@ -1,12 +1,13 @@
 import nodemailer from "nodemailer";
+import constant from "../config/constant.js"
 
 
 const sendMail = async (email, otp) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "shristipokharel889@gmail.com",
-      pass: "uroyrhaijmgvwkpy", // use environment variable in production
+      user: constant.EMAIL_USER,
+      pass: constant.EMAIL_PASS, 
     },
   });
 
